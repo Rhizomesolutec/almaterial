@@ -5,7 +5,7 @@ function normalizeInitial() {
   try {
     const raw = localStorage.getItem("SERVICES");
     if (raw) return JSON.parse(raw);
-  } catch (e) {
+  } catch {
     // ignore
   }
   return DEFAULT_SERVICES;
@@ -17,7 +17,7 @@ export default function useServices() {
   useEffect(() => {
     try {
       localStorage.setItem("SERVICES", JSON.stringify(services));
-    } catch (e) {
+    } catch {
       // ignore
     }
   }, [services]);
@@ -30,7 +30,7 @@ export default function useServices() {
           .toLowerCase()
           .trim()
           .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9\-]/g, "");
+          .replace(/[^a-z0-9-]/g, "");
     const id = service.id || slug || `s-${Date.now()}`;
     setServices((prev) => [...prev, { ...service, id, slug }]);
   }
