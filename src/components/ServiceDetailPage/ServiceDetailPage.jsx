@@ -1,20 +1,19 @@
 import { useParams } from "react-router-dom";
 import Header from "../Header/Header";
-import { useEffect, useState } from "react";
-import { SERVICES } from "../../data/data";
+import { useMemo } from "react";
+import useServices from "../../hooks/useServices";
 import Footer from "../Footer/Footer";
 import Service from "../Service/Service";
 
 const ServiceDetailPage = () => {
   const { slug } = useParams();
-  const [selectedService, setSelectedService] = useState(null);
+  const { services } = useServices();
+  const selectedService = useMemo(
+    () => services.find((s) => s.slug === slug) || null,
+    [slug, services],
+  );
 
-  useEffect(() => {
-    const service = SERVICES.find((s) => s.slug === slug);
-    setSelectedService(service);
-  }, [slug]);
-
-  const OTHER_SERVICES = SERVICES.filter((service) => service.slug !== slug);
+  const OTHER_SERVICES = services.filter((service) => service.slug !== slug);
 
   return (
     <>

@@ -8,10 +8,12 @@ import Service from "../../components/Service/Service";
 import TestimonialSection from "../Testimonial/Testimonial";
 import ContactUs from "../ContactForm/ContactForm";
 import MaterialSlider from "../MaterialSlider/MaterialSlider";
-import { SERVICES } from "../../data/data";
+import useServices from "../../hooks/useServices";
 import LogoSlider from "../LogoSlider/LogoSlider";
 
 const Home = () => {
+  const { services } = useServices();
+
   return (
     <div>
       <Header />
@@ -20,7 +22,7 @@ const Home = () => {
       <AboutUs />
       <Stats />
       <LogoSlider />
-      <Service data={SERVICES} />
+      <Service data={services} />
       {/* <TestimonialSection /> */}
       <ContactUs />
       <Footer />
