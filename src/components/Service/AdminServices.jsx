@@ -83,6 +83,51 @@ const AdminServices = () => {
     });
   }
 
+  function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function handleServiceImageFile(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      const url = await readFileAsDataURL(file);
+      setForm((f) => ({ ...f, image: url }));
+    } catch (err) {
+      console.error(err);
+      alert("Failed to read file");
+    }
+  }
+
+  async function handleChildImageFile(childIndex, e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      const url = await readFileAsDataURL(file);
+      updateChild(childIndex, { image: url });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to read child file");
+    }
+  }
+
+  async function handleItemImageFile(childIndex, itemIndex, e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    try {
+      const url = await readFileAsDataURL(file);
+      updateItem(childIndex, itemIndex, { image: url });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to read item file");
+    }
+  }
+
   function updateItem(childIndex, itemIndex, patch) {
     setForm((f) => {
       const children = [...(f.children || [])];
@@ -198,6 +243,13 @@ const AdminServices = () => {
                 onChange={(e) => setForm({ ...form, image: e.target.value })}
                 className="w-full border px-2 py-1"
               />
+              <div className="mt-2">
+                <label className="block text-sm font-semibold">Or upload image</label>
+                <input type="file" accept="image/*" onChange={handleServiceImageFile} className="w-full" />
+                {form.image && (
+                  <img src={form.image} alt="preview" className="mt-2 max-h-36 object-contain" />
+                )}
+              </div>
             </div>
 
             {form.id && (
@@ -231,7 +283,7 @@ const AdminServices = () => {
                           className="w-full border px-2 py-1 text-sm"
                         />
                         <label className="block text-xs font-semibold mt-2">
-                          Child Image
+                          Child Image (URL or upload)
                         </label>
                         <input
                           value={ch.image || ""}
@@ -239,7 +291,17 @@ const AdminServices = () => {
                             updateChild(ci, { image: e.target.value })
                           }
                           className="w-full border px-2 py-1 text-sm"
+                          placeholder="Image URL or leave blank to upload"
                         />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleChildImageFile(ci, e)}
+                          className="w-full mt-2"
+                        />
+                        {ch.image && (
+                          <img src={ch.image} alt="preview" className="mt-2 max-h-28 object-contain" />
+                        )}
                       </div>
                       <div className="flex flex-col gap-2 ml-2">
                         <button
@@ -279,8 +341,17 @@ const AdminServices = () => {
                               updateItem(ci, ii, { image: e.target.value })
                             }
                             className="w-48 border px-2 py-1 text-sm"
-                            placeholder="Item image URL"
+                            placeholder="Item image URL or leave blank to upload"
                           />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => handleItemImageFile(ci, ii, e)}
+                            className="w-36"
+                          />
+                          {it.image && (
+                            <img src={it.image} alt="preview" className="ml-2 max-h-20 object-contain" />
+                          )}
                           <button
                             type="button"
                             onClick={() => deleteItem(ci, ii)}
